@@ -19,12 +19,13 @@ namespace ScriptureJournal.Pages.ScriptureNotes
         public IndexModel(ScriptureJournal.Data.ScriptureNoteContext context)
         {
             _context = context;
+            Books = new List<SelectListItem>();
         }
 
         public IList<ScriptureNote> ScriptureNote { get;set; } = default!;
         [BindProperty(SupportsGet = true)]
         public string ? SearchString { get; set; }
-        public SelectList ? Books { get; set; }
+        public List<SelectListItem> Books { get; set; }
         [BindProperty(SupportsGet = true)]
         public Book ? ScriptureBook { get; set; }
 
@@ -47,20 +48,17 @@ namespace ScriptureJournal.Pages.ScriptureNotes
             }
 
             var books = await generateQuery.ToListAsync();
-            var bookNames = new List<string>();
+            
             foreach (Book b in books)
             {
-                try
+                var item = new SelectListItem
                 {
-                    bookNames.Add(b.GetDisplayName());
-                }
-                catch (Exception e)
-                {
-                    bookNames.Add(Enum.GetName(b));
-                }
+                    Text = b.GetDisplayName(),
+                    Value = b.ToString(),
+                };
+                Books.Add(item);
             }
-            
-            Books = new SelectList(bookNames);
+           
             ScriptureNote = await notes.ToListAsync();
         }
     }
